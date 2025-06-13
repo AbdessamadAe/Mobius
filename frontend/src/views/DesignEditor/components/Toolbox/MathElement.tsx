@@ -6,9 +6,6 @@ import { Block } from "baseui/block"
 import { ChevronDown } from "baseui/icon"
 import Common from "./Common"
 import TextColor from "~/components/Icons/TextColor"
-import Bold from "~/components/Icons/Bold"
-import Italic from "~/components/Icons/Italic"
-import Underline from "~/components/Icons/Underline"
 import TextAlignCenter from "~/components/Icons/TextAlignCenter"
 
 import { Button, SIZE, KIND } from "baseui/button"
@@ -21,11 +18,8 @@ import TextAlignLeft from "~/components/Icons/TextAlignLeft"
 import TextAlignRight from "~/components/Icons/TextAlignRight"
 import { Slider } from "baseui/slider"
 import useAppContext from "~/hooks/useAppContext"
-import { FONT_SIZES, SAMPLE_FONTS } from "~/constants/editor"
 import getSelectionType from "~/utils/get-selection-type"
-import { IStaticText } from "@layerhub-io/types"
 import { getTextProperties } from "../../utils/text"
-import { loadFonts } from "~/utils/fonts"
 import Scrollbar from "@layerhub-io/react-custom-scrollbar"
 interface TextState {
   color: string
@@ -61,13 +55,6 @@ export default function () {
   const editor = useEditor()
 
   React.useEffect(() => {
-    if (activeObject && activeObject.type === "StaticText") {
-      const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
-      setState({ ...state, ...textProperties })
-    }
-  }, [activeObject])
-
-  React.useEffect(() => {
     let watcher = async () => {
       if (activeObject && activeObject.type === "StaticText") {
         const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
@@ -84,157 +71,12 @@ export default function () {
     }
   }, [editor, activeObject])
 
-  const makeBold = React.useCallback(async () => {
-    if (state.bold) {
-      let desiredFont
-
-      if (state.italic) {
-        // look for regular italic
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^Italic$/)
-        })
-      } else {
-        // look for  regular
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^Regular$/)
-        })
-      }
-
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      }
-      await loadFonts([font])
-
-      editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
-      })
-      setState({ ...state, bold: false })
-    } else {
-      let desiredFont
-      if (state.italic) {
-        // look for bold italic
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^BoldItalic$/)
-        })
-      } else {
-        // look for bold
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^Bold$/)
-        })
-      }
-
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      }
-      await loadFonts([font])
-
-      editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
-      })
-      setState({ ...state, bold: true })
-    }
-  }, [editor, state])
-
-  const makeItalic = React.useCallback(async () => {
-    if (state.italic) {
-      let desiredFont
-      if (state.bold) {
-        // Search bold regular
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^Bold$/)
-        })
-      } else {
-        // Search regular
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^Regular$/)
-        })
-      }
-
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      }
-      await loadFonts([font])
-
-      editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
-      })
-      setState({ ...state, italic: false })
-    } else {
-      let desiredFont
-
-      if (state.bold) {
-        // search italic bold
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^BoldItalic$/)
-        })
-      } else {
-        // search regular italic
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-")
-          return postscript_names[postscript_names.length - 1].match(/^Italic$/)
-        })
-      }
-
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      }
-      await loadFonts([font])
-
-      editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
-      })
-      setState({ ...state, italic: true })
-    }
-  }, [editor, state])
-
-  const makeUnderline = React.useCallback(() => {
-    editor.objects.update({
-      underline: !state.underline,
-    })
-    setState({ ...state, underline: !state.underline })
-  }, [editor, state])
   return (
     <Block
       $style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 12px", justifyContent: "space-between" }}
     >
       <Block display={"flex"} gridGap="0.5rem" alignItems={"center"}>
-        <Block
-          onClick={() => setActiveSubMenu("FontSelector")}
-          $style={{
-            border: "1px solid rgb(185,185,185)",
-            borderRadius: "4px",
-            padding: "0.2rem 0.45rem",
-            cursor: "pointer",
-            fontWeight: 500,
-            fontSize: "14px",
-            gap: "0.5rem",
-          }}
-          height={"24px"}
-          display={"flex"}
-          alignItems={"center"}
-        >
-          <Block>{state.family}</Block>
-          <Block display={"flex"}>
-            <ChevronDown size={22} />
-          </Block>
-        </Block>
 
-        <TextFontSize />
         <Block display={"flex"} alignItems={"center"}>
           <StatefulTooltip
             placement={PLACEMENT.bottom}
@@ -247,48 +89,6 @@ export default function () {
             </Button>
           </StatefulTooltip>
 
-          <StatefulTooltip placement={PLACEMENT.bottom} showArrow={true} accessibilityType={"tooltip"} content="Bold">
-            <Button
-              $style={{ ...(!state.bold && { color: "rgb(169,169,169)" }) }}
-              disabled={!state.styleOptions.hasBold}
-              onClick={makeBold}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
-            >
-              <Bold size={20} />
-            </Button>
-          </StatefulTooltip>
-
-          <StatefulTooltip placement={PLACEMENT.bottom} showArrow={true} accessibilityType={"tooltip"} content="Italic">
-            <Button
-              $style={{ ...(!state.italic && { color: "rgb(169,169,169)" }) }}
-              disabled={!state.styleOptions.hasItalic}
-              onClick={makeItalic}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
-            >
-              <Italic size={20} />
-            </Button>
-          </StatefulTooltip>
-
-          <StatefulTooltip
-            placement={PLACEMENT.bottom}
-            showArrow={true}
-            accessibilityType={"tooltip"}
-            content="Underline"
-          >
-            <Button
-              $style={{ ...(!state.underline && { color: "rgb(169,169,169)" }) }}
-              onClick={makeUnderline}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
-            >
-              <Underline size={24} />
-            </Button>
-          </StatefulTooltip>
-
-          <TextLetterCase />
-
           <Block width={"1px"} height={"24px"} backgroundColor="rgb(213,213,213)" margin={"0 4px"} />
 
           <TextAlign />
@@ -298,138 +98,12 @@ export default function () {
           <TextSpacing />
           <Block width={"1px"} height={"24px"} backgroundColor="rgb(213,213,213)" margin={"0 4px"} />
           <Button size={SIZE.compact} kind={KIND.tertiary}>
-            Effects
-          </Button>
-          <Block width={"1px"} height={"24px"} backgroundColor="rgb(213,213,213)" margin={"0 4px"} />
-          <Button size={SIZE.compact} kind={KIND.tertiary}>
             Animate
           </Button>
         </Block>
       </Block>
       <Common />
     </Block>
-  )
-}
-
-function TextFontSize() {
-  const editor = useEditor()
-  const activeObject = useActiveObject()
-  const [value, setValue] = React.useState(12)
-
-  React.useEffect(() => {
-    // @ts-ignore
-    if (activeObject && activeObject.type === "StaticText") {
-      // @ts-ignore
-      setValue(activeObject.fontSize)
-    }
-  }, [activeObject])
-  const onChange = (size: number) => {
-    editor.objects.update({ fontSize: size })
-    setValue(size)
-  }
-
-  return (
-    <StatefulPopover
-      content={({ close }) => (
-        <Scrollbar style={{ height: "320px", width: "90px" }}>
-          <Block backgroundColor={"#ffffff"} padding={"10px 0"}>
-            {FONT_SIZES.map((size, index) => (
-              <Block
-                onClick={() => {
-                  onChange(size)
-                  close()
-                }}
-                $style={{
-                  height: "32px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  padding: "0 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  ":hover": {
-                    background: "rgb(243,243,243)",
-                  },
-                }}
-                key={index}
-              >
-                {size}
-              </Block>
-            ))}
-          </Block>
-        </Scrollbar>
-      )}
-    >
-      <Block width={"80px"}>
-        <Input
-          value={value}
-          onChange={(e: any) => onChange(e.target.value)}
-          endEnhancer={<ChevronDown size={22} />}
-          overrides={{
-            Input: {
-              style: {
-                backgroundColor: "#ffffff",
-                paddingRight: 0,
-                fontWeight: 500,
-                fontFamily: "Uber Move Text",
-                fontSize: "14px",
-              },
-            },
-            EndEnhancer: {
-              style: {
-                paddingRight: "8px",
-                paddingLeft: 0,
-                backgroundColor: "#ffffff",
-              },
-            },
-            Root: {
-              style: {
-                paddingRight: 0,
-                borderTopWidth: "1px",
-                borderBottomWidth: "1px",
-                borderRightWidth: "1px",
-                borderLeftWidth: "1px",
-                borderBottomColor: "rgb(185,185,185)",
-                borderTopColor: "rgb(185,185,185)",
-                borderRightColor: "rgb(185,185,185)",
-                borderLeftColor: "rgb(185,185,185)",
-                borderEndEndRadius: "4px",
-                borderTopLeftRadius: "4px",
-                borderTopRightRadius: "4px",
-                borderStartEndRadius: "4px",
-                borderBottomLeftRadius: "4px",
-                backgroundColor: "#ffffff",
-              },
-            },
-          }}
-          type="number"
-          size={SIZE.mini}
-        />
-      </Block>
-    </StatefulPopover>
-  )
-}
-
-function TextLetterCase() {
-  const [state, setState] = React.useState<{ upper: boolean }>({ upper: false })
-  const editor = useEditor()
-  return (
-    <StatefulTooltip placement={PLACEMENT.bottom} showArrow={true} accessibilityType={"tooltip"} content="Letter case">
-      <Button
-        onClick={() => {
-          if (!state.upper) {
-            setState({ upper: true })
-            editor.objects.toUppercase()
-          } else {
-            setState({ upper: false })
-            editor.objects.toLowerCase()
-          }
-        }}
-        size={SIZE.mini}
-        kind={KIND.tertiary}
-      >
-        <LetterCase size={24} />
-      </Button>
-    </StatefulTooltip>
   )
 }
 
