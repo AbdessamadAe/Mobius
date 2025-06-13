@@ -24,6 +24,10 @@ export const BASE_ITEMS = [
     name: "Text",
   },
   {
+    id: "math",
+    name: "Math",
+  },
+  {
     id: "graphics",
     name: "Graphics",
   },
@@ -66,6 +70,10 @@ export const VIDEO_PANEL_ITEMS = [
   {
     id: "text",
     name: "Text",
+  },
+  {
+    id: "math",
+    name: "Math",
   },
   {
     id: "graphics",

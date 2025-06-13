@@ -65,7 +65,12 @@ export default function () {
   )
 }
 
-function ImageItem({ preview, onClick }: { preview: any; onClick?: (option: any) => void }) {
+interface ImageItemProps {
+  preview: string;
+  onClick?: () => void;
+}
+
+function ImageItem({ preview, onClick }: ImageItemProps) {
   const [css] = useStyletron()
   return (
     <div
@@ -84,6 +89,7 @@ function ImageItem({ preview, onClick }: { preview: any; onClick?: (option: any)
     >
       <img
         src={preview}
+        alt="Element preview"
         className={css({
           width: "100%",
           height: "100%",

@@ -1,5 +1,6 @@
 import TextProperties from "./TextProperties"
 import Text from "./Text"
+import Math from "./Math"
 import Customize from "./Customize"
 import FontSelector from "./FontSelector"
 import Pixabay from "./Pixabay"
@@ -16,6 +17,7 @@ import PathFill from "./PathFill"
 export default {
   StaticText: TextProperties,
   Text: Text,
+  Math: Math,
   Customize: Customize,
   FontSelector: FontSelector,
   Pixabay: Pixabay,
