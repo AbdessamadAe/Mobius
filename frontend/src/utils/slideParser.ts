@@ -15,13 +15,9 @@ export function parseMarkdownToSlides(markdown: string): Slide[] {
     try {
       parsedContent = matter(trimmedContent);
       metadata = {
-        template: parsedContent.data.template || 'default',
-        animation: parsedContent.data.animation || 'fadeIn',
-        duration: parsedContent.data.duration || 1000,
         background: parsedContent.data.background,
         image: parsedContent.data.image,
         layout: parsedContent.data.layout || 'default',
-        transition: parsedContent.data.transition || 'fade',
       };
     } catch (error) {
       // If no frontmatter, use the content as-is
@@ -44,22 +40,13 @@ export function parseMarkdownToSlides(markdown: string): Slide[] {
 
 export function extractSlideMetadata(frontmatter: Record<string, any>): SlideMetadata {
   return {
-    template: frontmatter.template || 'default',
-    animation: frontmatter.animation || 'fadeIn',
-    duration: frontmatter.duration || 1000,
     background: frontmatter.background,
     image: frontmatter.image,
     layout: frontmatter.layout || 'default',
-    transition: frontmatter.transition || 'fade',
   };
 }
 
 export function validateSlideTemplate(template: string): boolean {
-  const validTemplates = ['default', 'title', 'imageLeft', 'imageRight', 'imageFull', 'split', 'quote', 'center'];
+  const validTemplates = ['default'];
   return validTemplates.includes(template);
-}
-
-export function validateAnimation(animation: string): boolean {
-  const validAnimations = ['fadeIn', 'slideIn', 'slideUp', 'slideDown', 'slideLeft', 'slideRight', 'zoom', 'zoomIn', 'zoomOut', 'none'];
-  return validAnimations.includes(animation);
 }

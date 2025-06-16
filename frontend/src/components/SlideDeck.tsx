@@ -74,14 +74,14 @@ export const SlideDeck: React.FC<SlideDeckProps> = ({
               onClick={() => onSlideSelect(index)}
               className={`w-full mb-3 p-3 rounded-lg text-left transition-all duration-200 ${
                 isActive 
-                  ? 'bg-blue-600 text-white' 
+                  ? 'bg-gray-200 text-white' 
                   : 'bg-white hover:bg-gray-100 text-gray-700 border border-gray-200'
               }`}
             >
               {/* Slide number */}
               <div className="flex items-start space-x-3">
                 <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                  isActive ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'
+                  isActive ? 'bg-gray-500 text-white' : 'bg-gray-300 text-gray-600'
                 }`}>
                   {index + 1}
                 </div>
